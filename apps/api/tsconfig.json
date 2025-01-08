@@ -1,11 +1,16 @@
 {
     "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "rootDir": "./src",
-      "outDir": "./dist",
-      "strict": true
+        "target": "es2016",
+        "moduleDetection": "force",
+        "module": "Node16",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node16"
     },
-    "include": ["src/**/*"]
-  }
-  
+    "include": [
+        "src/**/*"
+    ]
+}
