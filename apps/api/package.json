@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "npx esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --tsconfig=tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "npx esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --tsconfig=tsconfig.json && node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +18,6 @@
     "esbuild": "^0.24.2",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "zod": "^3.24.1"
   }
