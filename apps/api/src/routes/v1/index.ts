@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
             data: {
                 username: parsedData.data.username,
                 password: hashedPassword,
-                role: parsedData.data.type === "admin" ? "Admin" : "User"
+                role: "User"
             }
         })
 
@@ -56,6 +56,10 @@ router.post("/signin", async (req, res) => {
         const user = await client.user.findUnique({
             where: {
                 username: parsedData.data.username
+            }, select: {
+                id: true,
+                password: true,
+                role: true
             }
         })
 

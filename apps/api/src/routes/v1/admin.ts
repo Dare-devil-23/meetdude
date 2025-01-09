@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { adminMiddleware } from "../../middleWare/admin";
-import { CreateAvatarSchema, CreateElementSchema, CreateMapSchema, UpdateElementSchema } from "../../types";
+import { CreateAvatarSchema, CreateElementSchema, CreateMapSchema, UpdateElementSchema, UpdateUserRoleSchema } from "../../types";
 import client from "@repo/db/client"
 
 export const adminRouter = Router();
+adminRouter.use(adminMiddleware)
 
-adminRouter.post("/element", adminMiddleware, async (req, res) => {
+adminRouter.post("/element", async (req, res) => {
     const parsedData = CreateElementSchema.safeParse(req.body);
 
     if (!parsedData.success) {
@@ -29,7 +30,7 @@ adminRouter.post("/element", adminMiddleware, async (req, res) => {
     })
 })
 
-adminRouter.put("/element/:elementId", adminMiddleware, async (req, res) => {
+adminRouter.put("/element/:elementId", async (req, res) => {
     const parsedData = UpdateElementSchema.safeParse(req.body);
 
     if (!parsedData.success) {
@@ -53,7 +54,7 @@ adminRouter.put("/element/:elementId", adminMiddleware, async (req, res) => {
     })
 })
 
-adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
+adminRouter.post("/avatar", async (req, res) => {
     const parsedData = CreateAvatarSchema.safeParse(req.body);
 
     if (!parsedData.success) {
@@ -75,7 +76,7 @@ adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
     })
 })
 
-adminRouter.post("/map", adminMiddleware, async (req, res) => {
+adminRouter.post("/map", async (req, res) => {
     const parsedData = CreateMapSchema.safeParse(req.body);
 
     if (!parsedData.success) {
@@ -109,3 +110,63 @@ adminRouter.post("/map", adminMiddleware, async (req, res) => {
         id: map.id
     })
 })
+
+adminRouter.get("/users", async (req, res) => {
+    const users = await client.user.findMany({
+        select: {
+            id: true,
+            username: true,
+            role: true
+        }
+    })
+    res.json(users)
+})
+
+adminRouter.put("/user/:userId/role", async (req, res) => {
+    const parsedData = UpdateUserRoleSchema.safeParse(req.body);
+
+    if (!parsedData.success) {
+        res.status(400).json({
+            message: "Validation error",
+        });
+        return;
+    }
+
+    if(req.userId === req.params.userId){
+        res.status(403).json({
+            message: "You are not allowed to update your own role",
+        });
+        return;
+    }
+
+    try {
+        const existingUser = await client.user.findUnique({
+            where: { id: req.params.userId },
+        });
+
+        if (!existingUser) {
+            res.status(404).json({
+                message: "User not found",
+            });
+            return;
+        }
+
+        const updatedUser = await client.user.update({
+            where: { id: existingUser.id },
+            data: {
+                role: parsedData.data.type === "admin" ? "Admin" : "User",
+            },
+        });
+
+        res.json({
+            message: "User role updated",
+            role: updatedUser.role,
+            id: updatedUser.id
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+});

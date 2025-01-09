@@ -1,4 +1,5 @@
 const axios2 = require("axios");
+const jwt = require("jsonwebtoken");
 
 const BACKEND_URL = "http://localhost:3000"
 const WS_URL = "ws://localhost:3001"
@@ -45,14 +46,12 @@ describe("Authentication", () => {
         const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
             password,
-            type: "admin"
         })
 
         expect(response.status).toBe(200)
         const updatedResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
-            password,
-            type: "admin"
+            password
         })
 
         expect(updatedResponse.status).toBe(400);
@@ -85,7 +84,6 @@ describe("Authentication", () => {
 
         expect(response.status).toBe(200)
         expect(response.data.token).toBeDefined()
-
     })
 
     test('Signin fails if the username and password are incorrect', async () => {
@@ -112,14 +110,8 @@ describe("User metadata endpoint", () => {
     let avatarId = ""
 
     beforeAll(async () => {
-        const username = `sahith-${Math.random()}`
-        const password = "123456"
-
-        await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-            username,
-            password,
-            type: "admin"
-        });
+        const username = "test2"
+        const password = "Test@123"
 
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
             username,
@@ -180,23 +172,18 @@ describe("User avatar information", () => {
     let userId;
 
     beforeAll(async () => {
-        const username = `sahith-${Math.random()}`
-        const password = "123456"
-
-        const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-            username,
-            password,
-            type: "admin"
-        });
-
-        userId = signupResponse.data.userId
+        const username = "test2"
+        const password = "Test@123"
 
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
             username,
             password
         })
 
-        token = response.data.token
+        token = response.data.token;
+
+        const decodedToken = jwt.decode(token);
+        userId = decodedToken.userId;
 
         const avatarResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/avatar`, {
             "imageUrl": "https://avatar.iran.liara.run/public",
@@ -208,7 +195,6 @@ describe("User avatar information", () => {
         })
 
         avatarId = avatarResponse.data.id;
-
     })
 
     test("Get back avatar information for a user", async () => {
@@ -236,28 +222,24 @@ describe("Space information", () => {
     let userId;
 
     beforeAll(async () => {
-        const username = `sahith-${Math.random()}`
+        const adminUsername = 'test2'
+        const adminPassword = "Test@123"
+        const username = 'sahith' + Math.random()
         const password = "123456"
 
-        const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-            username,
-            password,
-            type: "admin"
-        });
-
-        adminId = signupResponse.data.userId
-
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-            username,
-            password
+            username: adminUsername,
+            password: adminPassword
         })
 
         adminToken = response.data.token
 
+        const decodedToken = jwt.decode(adminToken);
+        adminId = decodedToken.userId;
+
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + "-user",
-            password,
-            type: "user"
+            password
         });
 
         userId = userSignupResponse.data.userId
@@ -406,35 +388,6 @@ describe("Space information", () => {
 
         expect(deleteResponse.status).toBe(403)
     })
-
-    test("Admin has no spaces initially", async () => {
-        const response = await axios.get(`${BACKEND_URL}/api/v1/space/all`, {
-            headers: {
-                authorization: `Bearer ${adminToken}`
-            }
-        });
-        expect(response.data.spaces.length).toBe(0)
-    })
-
-    test("Admin has gets once space after", async () => {
-        const spaceCreateResponse = await axios.post(`${BACKEND_URL}/api/v1/space`, {
-            "name": "Test",
-            "dimensions": "100x200",
-        }, {
-            headers: {
-                authorization: `Bearer ${adminToken}`
-            }
-        });
-        const response = await axios.get(`${BACKEND_URL}/api/v1/space/all`, {
-            headers: {
-                authorization: `Bearer ${adminToken}`
-            }
-        });
-        const filteredSpace = response.data.spaces.find(x => x.id == spaceCreateResponse.data.spaceId)
-        expect(response.data.spaces.length).toBe(1)
-        expect(filteredSpace).toBeDefined()
-
-    })
 })
 
 describe("Arena endpoints", () => {
@@ -451,20 +404,19 @@ describe("Arena endpoints", () => {
         const username = `sahith-${Math.random()}`
         const password = "123456"
 
-        const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-            username,
-            password,
-            type: "admin"
-        });
+        const adminUsername = 'test2'
+        const adminPassword = "Test@123"
 
-        adminId = signupResponse.data.userId
 
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-            username: username,
-            password
+            username: adminUsername,
+            password: adminPassword
         })
 
         adminToken = response.data.token
+
+        const decodedToken = jwt.decode(adminToken);
+        adminId = decodedToken.userId;
 
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + "-user",
@@ -633,20 +585,18 @@ describe("Admin Endpoints", () => {
         const username = `sahith-${Math.random()}`
         const password = "123456"
 
-        const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-            username,
-            password,
-            type: "admin"
-        });
-
-        adminId = signupResponse.data.userId
+        const adminUsername = 'test2'
+        const adminPassword = "Test@123"
 
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-            username: username,
-            password
+            username: adminUsername,
+            password: adminPassword
         })
 
         adminToken = response.data.token
+
+        const decodedToken = jwt.decode(adminToken);
+        adminId = decodedToken.userId;
 
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + "-user",
@@ -767,7 +717,91 @@ describe("Admin Endpoints", () => {
         })
 
         expect(updateElementResponse.status).toBe(200);
+    })
 
+    test("Admin is able to get all users", async () => {
+        const usersResponse = await axios.get(`${BACKEND_URL}/api/v1/admin/users`, {
+            headers: {
+                "authorization": `Bearer ${adminToken}`
+            }
+        })
+
+        expect(usersResponse.status).toBe(200)
+        expect(usersResponse.data.length).toBeDefined()
+    })
+
+    test("User is not able to get all users", async () => {
+        const usersResponse = await axios.get(`${BACKEND_URL}/api/v1/admin/users`, {
+            headers: {
+                "authorization": `Bearer ${userToken}`
+            }
+        })
+
+        expect(usersResponse.status).toBe(403)
+    })
+
+    test("Not able to update random invalid userId", async ()=>{
+        const updateUserRoleResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/user/${userId+"-test"}/role`, {
+            "type": "admin"
+        }, {
+            headers: {
+                "authorization": `Bearer ${adminToken}`
+            }
+        })
+
+        expect(updateUserRoleResponse.status).toBe(404)
+    })
+
+    test("User is not able to update the role of a user", async () => {
+        const updateUserRoleResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/user/${userId}/role`, {
+            "type": "admin"
+        }, {
+            headers: {
+                "authorization": `Bearer ${userToken}`
+            }
+        })
+
+        expect(updateUserRoleResponse.status).toBe(403)
+    })
+
+    test("Admin is able to update the role of a user to admin", async () => {
+        const updateUserRoleResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/user/${userId}/role`, {
+            "type": "admin"
+        }, {
+            headers: {
+                "authorization": `Bearer ${adminToken}`
+            }
+        })
+
+        expect(updateUserRoleResponse.status).toBe(200)
+        expect(updateUserRoleResponse.data.role).toBe("Admin")
+        expect(updateUserRoleResponse.data.id).toBe(userId)
+    })
+
+    test("Admin is able to update the role of a Admin to user", async () => {
+        const updateUserRoleResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/user/${userId}/role`, {
+            "type": "user"
+        }, {
+            headers: {
+                "authorization": `Bearer ${adminToken}`
+            }
+        })
+
+        expect(updateUserRoleResponse.status).toBe(200)
+        expect(updateUserRoleResponse.data.role).toBe("User")
+        expect(updateUserRoleResponse.data.id).toBe(userId)
+    })
+
+    test("Admin is not able to update their own role", async () => {
+        const updateUserRoleResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/user/${adminId}/role`, {
+            "type": "user"
+        }, {
+            headers: {
+                "authorization": `Bearer ${adminToken}`
+            }
+        })
+
+        expect(updateUserRoleResponse.status).toBe(403)
     })
 });
 
@@ -806,22 +840,22 @@ describe("Websocket tests", () => {
     }
 
     async function setupHTTP() {
+        const adminUsername = 'test2'
+        const adminPassword = "Test@123"
+
         const username = `sahith-${Math.random()}`
         const password = "123456"
-        const adminSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-            username,
-            password,
-            type: "admin"
-        })
 
         const adminSigninResponse = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-            username,
-            password
+            username: adminUsername,
+            password: adminPassword
         })
 
-        adminUserId = adminSignupResponse.data.userId;
         adminToken = adminSigninResponse.data.token;
 
+        const decodedToken = jwt.decode(adminToken);
+        adminUserId = decodedToken.userId;
+        
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + `-user`,
             password,

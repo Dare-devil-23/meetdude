@@ -3,7 +3,6 @@ import z from "zod"
 export const SignupSchema = z.object({
     username: z.string(),
     password: z.string(),
-    type: z.enum(["user", "admin"])
 })
 
 export const SigninSchema = z.object({
@@ -41,6 +40,10 @@ export const CreateElementSchema = z.object({
 
 export const UpdateElementSchema = z.object({
     imageUrl: z.string(),
+})
+
+export const UpdateUserRoleSchema = z.object({
+    type: z.enum(["user", "admin"])
 })
 
 export const CreateAvatarSchema = z.object({
