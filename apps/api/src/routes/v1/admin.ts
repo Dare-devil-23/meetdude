@@ -116,7 +116,9 @@ adminRouter.get("/users", async (req, res) => {
         select: {
             id: true,
             username: true,
-            role: true
+            role: true,
+            email: true,
+            avatar: true
         }
     })
     res.json(users)

@@ -43,15 +43,18 @@ describe("Authentication", () => {
     test('User is able to sign up only once', async () => {
         const username = "sahith" + Math.random();
         const password = "123456";
+        const email = `${username}@gmail.com`
         const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
             password,
+            email
         })
 
         expect(response.status).toBe(200)
         const updatedResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
-            password
+            password,
+            email
         })
 
         expect(updatedResponse.status).toBe(400);
@@ -74,7 +77,7 @@ describe("Authentication", () => {
         await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
             password,
-            type: "admin"
+            email: `${username}@gmail.com`
         });
 
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
@@ -93,7 +96,7 @@ describe("Authentication", () => {
         await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
             password,
-            role: "admin"
+            email: `${username}@gmail.com`,
         });
 
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
@@ -239,7 +242,8 @@ describe("Space information", () => {
 
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + "-user",
-            password
+            password,
+            email: `${username}-user@gmail.com`
         });
 
         userId = userSignupResponse.data.userId
@@ -421,7 +425,7 @@ describe("Arena endpoints", () => {
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + "-user",
             password,
-            type: "user"
+            email: `${username}-user@gmail.com`,
         });
 
         userId = userSignupResponse.data.userId
@@ -601,7 +605,7 @@ describe("Admin Endpoints", () => {
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + "-user",
             password,
-            type: "user"
+            email: `${username}-user@gmail.com`,
         });
 
         userId = userSignupResponse.data.userId
@@ -844,6 +848,7 @@ describe("Websocket tests", () => {
         const adminPassword = "Test@123"
 
         const username = `sahith-${Math.random()}`
+        const email = `${username}@gmail.com`
         const password = "123456"
 
         const adminSigninResponse = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
@@ -859,7 +864,7 @@ describe("Websocket tests", () => {
         const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username: username + `-user`,
             password,
-            type: "user"
+            email,
         })
         const userSigninResponse = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
             username: username + `-user`,
