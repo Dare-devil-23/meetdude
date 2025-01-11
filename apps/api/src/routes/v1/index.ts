@@ -54,9 +54,12 @@ router.post("/signin", async (req, res) => {
     }
 
     try {
-        const user = await client.user.findUnique({
+        const user = await client.user.findFirst({
             where: {
-                username: parsedData.data.username
+                username: {
+                    equals: parsedData.data.username,
+                    mode: "insensitive"
+                }
             }, select: {
                 id: true,
                 password: true,

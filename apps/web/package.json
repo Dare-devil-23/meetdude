@@ -10,21 +10,24 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "next": "15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.1.4"
+    "react-toastify": "^11.0.2",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@eslint/eslintrc": "^3",
     "@repo/eslint-config": "workspace:*",
-    "typescript": "^5",
+    "@repo/typescript-config": "workspace:*",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "daisyui": "^4.12.23",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
-    "@eslint/eslintrc": "^3"
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }

@@ -58,3 +58,10 @@ userRouter.get("/metadata/bulk", async (req, res) => {
         }))
     })
 })
+
+userRouter.get("/verify-token", userMiddleware, async (req, res) => {
+    console.log("verify token", req.userId);
+    res.json({
+        message: "Token verified"
+    })
+})
