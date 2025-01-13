@@ -22,9 +22,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
             hideProgressBar={true}
             closeOnClick
             rtl={false}
-            pauseOnFocusLoss
             draggable
-            pauseOnHover
             theme="dark"
             className="rounded-xl"
           />

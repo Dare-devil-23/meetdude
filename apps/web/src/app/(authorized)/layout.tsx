@@ -8,6 +8,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser, clearUser } from "@/store/slices/userSlice";
+import SpacesLoading from "./loading";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
@@ -39,7 +40,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <main className="flex-grow">
                 {
                     isLoading ? (
-                        <div>Loading...</div>
+                        <SpacesLoading />
                     ) : (
                         children
                     )

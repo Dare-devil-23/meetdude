@@ -58,6 +58,7 @@ spaceRouter.post("/", userMiddleware, async (req, res) => {
                 name: parsedData.data.name,
                 width: parseInt(parsedData.data.dimensions.split("x")[0]),
                 height: parseInt(parsedData.data.dimensions.split("x")[1]),
+                thumbnail: parsedData.data.thumbnail,
                 creatorId: req.userId
             }
         })
@@ -74,7 +75,8 @@ spaceRouter.post("/", userMiddleware, async (req, res) => {
         }, select: {
             mapElements: true,
             width: true,
-            height: true
+            height: true,
+            thumbnail: true
         }
     })
 
@@ -92,6 +94,7 @@ spaceRouter.post("/", userMiddleware, async (req, res) => {
                     name: parsedData.data.name,
                     width: map.width,
                     height: map.height,
+                    thumbnail: map.thumbnail,
                     creatorId: req.userId
                 }
             })
@@ -129,32 +132,48 @@ spaceRouter.delete("/:spaceId", userMiddleware, async (req, res) => {
         select: {
             creatorId: true
         }
-    })
+    });
 
     if (!space) {
         res.status(404).json({
             message: "Space not found"
-        })
+        });
         return;
     }
 
     if (space.creatorId !== req.userId) {
         res.status(403).json({
             message: "Unauthorized"
-        })
+        });
         return;
     }
 
-    await client.space.delete({
-        where: {
-            id: req.params.spaceId
-        }
-    })
+    try {
+        // Delete related SpaceElements first
+        await client.spaceElements.deleteMany({
+            where: {
+                spaceId: req.params.spaceId
+            }
+        });
 
-    res.status(200).json({
-        message: "Space deleted"
-    })
-})
+        // Then delete the Space
+        await client.space.delete({
+            where: {
+                id: req.params.spaceId
+            }
+        });
+
+        res.status(200).json({
+            message: "Space and related elements deleted"
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "An error occurred while deleting the Space"
+        });
+    }
+});
+
 
 spaceRouter.get("/all", userMiddleware, async (req, res) => {
     const spaces = await client.space.findMany({
@@ -172,6 +191,18 @@ spaceRouter.get("/all", userMiddleware, async (req, res) => {
                 dimensions: `${space.width}x${space.height}`
             }
         })
+    })
+})
+
+spaceRouter.get("/maps", userMiddleware, async (_, res) => {
+    const maps = await client.map.findMany()
+    res.json({
+        maps: maps.map((m) => ({
+            id: m.id,
+            name: m.name,
+            thumbnail: m.thumbnail,
+            dimensions: `${m.width}x${m.height}`
+        }))
     })
 })
 

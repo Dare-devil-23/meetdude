@@ -3,3 +3,17 @@ export type Avatar = {
     imageUrl: string;
     name: string;
 }
+
+export type Space = {
+    id: string;
+    name: string;
+    thumbnail: string;
+    dimensions: string;
+}
+
+export type Map = {
+    id: string;
+    name: string;
+    thumbnail: string;
+    dimensions: string;
+}
