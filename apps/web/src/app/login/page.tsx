@@ -11,13 +11,15 @@ import { toast } from "react-toastify";
 const LoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const params = {
-      username: e.currentTarget.username.value,
+      usernameOrEmail: e.currentTarget.usernameOrEmail.value,
       password: e.currentTarget.password.value,
     }
+    setIsLoading(true);
     signinApi(params).then((response) => {
       if (response?.token) {
         setSessionStorage(AUTH_TOKEN_KEY, response?.token);
@@ -29,6 +31,8 @@ const LoginPage = () => {
       }
     }).catch((error) => {
       setError(error?.response?.data?.message);
+    }).finally(() => {
+      setIsLoading(false);
     });
   };
 
@@ -45,13 +49,13 @@ const LoginPage = () => {
           <form className="card-body" onSubmit={handleSubmit}>
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Username <span className="text-red-500">*</span></span>
+                <span className="label-text">Username or Email<span className="text-red-500">*</span></span>
               </label>
-              <input type="text" placeholder="username" className="input input-bordered" required name="username" />
+              <input type="text" placeholder="username or email" className="input input-bordered" required name="usernameOrEmail" />
             </div>
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Password <span className="text-red-500">*</span></span>
+                <span className="label-text">Password<span className="text-red-500">*</span></span>
               </label>
               <input type="password" placeholder="password" className="input input-bordered" required name="password" />
             </div>
@@ -61,10 +65,10 @@ const LoginPage = () => {
               </label>
             )}
             <label className="label">
-              <span className="label-text">Don't have an account? <Link href="/signup" className="link link-hover">Signup</Link></span>
+              <span className="label-text">Don't have an account?<Link href="/signup" className="link link-hover">Signup</Link></span>
             </label>
             <div className="form-control mt-6">
-              <button className="btn btn-primary">Login</button>
+              <button className="btn btn-primary" disabled={isLoading}>{isLoading ? "Loading..." : "Login"}</button>
             </div>
           </form>
         </div>

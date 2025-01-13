@@ -1,6 +1,6 @@
 import axiosInstance from "@/services/axios";
 
-export const signinApi = (params: { username: string, password: string }): Promise<any> => {
+export const signinApi = (params: { usernameOrEmail: string, password: string }): Promise<any> => {
     return new Promise((resolve, reject) => {
         axiosInstance.post("/api/v1/signin", params).then((response) => {
             if (response?.status === 200) {
@@ -14,9 +14,9 @@ export const signinApi = (params: { username: string, password: string }): Promi
     });
 };
 
-export const verifyTokenApi = (): Promise<any> => {
+export const getUserApi = (): Promise<any> => {
     return new Promise((resolve, reject) => {
-        axiosInstance.get("/api/v1/user/verify-token").then((response) => {
+        axiosInstance.get("/api/v1/user").then((response) => {
             resolve(response.data);
         }).catch((error) => {
             reject(error);

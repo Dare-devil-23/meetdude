@@ -5,6 +5,26 @@ import { userMiddleware } from "../../middleWare/user";
 
 export const userRouter = Router();
 
+userRouter.get("/", userMiddleware, async (req, res) => {
+    const user = await client.user.findUnique({
+        where: {
+            id: req.userId
+        },
+        select: {
+            id: true,
+            username: true,
+            email: true,
+            avatarId: true,
+            role: true,
+            avatar: true
+        }
+    })
+
+    res.json({
+        user
+    })
+})
+
 userRouter.post("/metadata", userMiddleware, async (req, res) => {
     const parsedData = UpdateMetadataSchema.safeParse(req.body);
 
@@ -56,12 +76,5 @@ userRouter.get("/metadata/bulk", async (req, res) => {
             userId: m.id,
             avatarId: m.avatarId
         }))
-    })
-})
-
-userRouter.get("/verify-token", userMiddleware, async (req, res) => {
-    console.log("verify token", req.userId);
-    res.json({
-        message: "Token verified"
     })
 })

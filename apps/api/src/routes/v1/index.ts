@@ -56,11 +56,12 @@ router.post("/signin", async (req, res) => {
     try {
         const user = await client.user.findFirst({
             where: {
-                username: {
-                    equals: parsedData.data.username,
-                    mode: "insensitive"
-                }
-            }, select: {
+                OR: [
+                    { username: { equals: parsedData.data.usernameOrEmail, mode: "insensitive" } },
+                    { email: { equals: parsedData.data.usernameOrEmail, mode: "insensitive" } }
+                ]
+            },
+            select: {
                 id: true,
                 password: true,
                 role: true
@@ -97,7 +98,7 @@ router.post("/signin", async (req, res) => {
     }
 })
 
-router.get("/elements", async (req, res) => {
+router.get("/elements", async (_, res) => {
     const elements = await client.element.findMany()
     res.json({
         elements: elements.map((e) => ({
@@ -110,7 +111,7 @@ router.get("/elements", async (req, res) => {
     })
 })
 
-router.get("/avatars", async (req, res) => {
+router.get("/avatars", async (_, res) => {
     const avatars = await client.avatar.findMany()
     res.json({
         avatars: avatars.map((a) => ({
