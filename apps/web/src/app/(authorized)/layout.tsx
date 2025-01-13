@@ -33,15 +33,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         });
     }, [pathname]);
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <section className="flex flex-col min-h-screen">
             <NavBar />
             <main className="flex-grow">
-                {children}
+                {
+                    isLoading ? (
+                        <div>Loading...</div>
+                    ) : (
+                        children
+                    )
+                }
             </main>
             <Footer />
         </section>

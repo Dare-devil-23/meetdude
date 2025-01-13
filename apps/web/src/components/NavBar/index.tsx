@@ -20,6 +20,13 @@ const NavBar = () => {
         router.push("/login");
     }
 
+    const handleClick = (e: React.MouseEvent<HTMLLIElement>) => {
+        const elem = e.target as HTMLElement;
+        if (elem) {
+            elem.blur();
+        }
+    };
+
     return (
         <div className="navbar bg-base">
             <div className="flex-none">
@@ -48,7 +55,7 @@ const NavBar = () => {
                     <ul
                         tabIndex={0}
                         className="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow-md">
-                        <li>
+                        <li onClick={handleClick}>
                             <Link href="/profile" className="justify-between">
                                 Profile
                                 <span className="badge badge-primary">New</span>
@@ -56,7 +63,7 @@ const NavBar = () => {
                         </li>
                         {
                             loggedinUser?.role === ROLE.ADMIN && (
-                                <li>
+                                <li onClick={handleClick}>
                                     <Link href="/admin">
                                         Admin Dashboard
                                     </Link>
