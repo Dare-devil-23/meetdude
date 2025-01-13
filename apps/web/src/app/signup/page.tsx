@@ -44,19 +44,19 @@ const SignupPage = () => {
               <label className="label">
                 <span className="label-text">Username <span className="text-red-500">*</span></span>
               </label>
-              <input type="text" placeholder="username" className="input input-bordered" required name="username" />
+              <input type="text" placeholder="username" className="input input-bordered" required name="username" autoComplete="username" />
             </div>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Email <span className="text-red-500">*</span></span>
               </label>
-              <input type="email" placeholder="email" className="input input-bordered" required name="email" />
+              <input type="email" placeholder="email" className="input input-bordered" required name="email" autoComplete="email" />
             </div>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Password <span className="text-red-500">*</span></span>
               </label>
-              <input type="password" placeholder="password" className="input input-bordered" required name="password" />
+              <input type="password" placeholder="password" className="input input-bordered" required name="password" autoComplete="new-password" />
             </div>
             {error && (
               <label className="label">

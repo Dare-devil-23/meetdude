@@ -3,17 +3,18 @@
 import React, { useEffect, useState } from 'react'
 import { getAvailableAvatars, updateUserAvatar } from '@/services/user'
 import { Avatar } from '@/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { RootState } from '@/store/store';
+import { useSelector } from 'react-redux';
 
-interface AvatarUpdateProps {
-  showNote?: boolean;
-}
-
-const AvatarUpdate = ({ showNote = true }: AvatarUpdateProps) => {
+const AvatarUpdatePage = () => {
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const loggedinUser = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     getAvailableAvatars().then((response) => {
@@ -27,7 +28,11 @@ const AvatarUpdate = ({ showNote = true }: AvatarUpdateProps) => {
         avatarId: selectedAvatar.id
       }).then(() => {
         toast.success('Avatar updated successfully');
-        router.push('/');
+        if (searchParams.get('ref') === 'profile') {
+          router.replace('/profile');
+        } else {
+          router.replace('/');
+        }
       }).catch((error) => {
         toast.error('Failed to update avatar');
         console.log(error);
@@ -36,15 +41,15 @@ const AvatarUpdate = ({ showNote = true }: AvatarUpdateProps) => {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center h-full mx-10'>
+    <div className='flex flex-col items-center justify-center h-full mx-5 md:mx-10'>
       <div className='flex flex-col items-center justify-center h-full'>
         <h1 className='text-2xl font-semibold mb-2'>Choose your avatar</h1>
-        {showNote && <p className='text-sm text-gray-500 mb-10'>You can change your avatar anytime, select one to continue</p>}
+        {!loggedinUser?.avatarId && <p className='text-sm text-gray-500 mb-10 text-center'>You can change your avatar anytime in your profile, select one to continue</p>}
       </div>
-      <div className='flex gap-5 flex-wrap'>
+      <div className='grid grid-cols-12 gap-5 lg:gap-10 lg:max-w-5xl'>
         {avatars.map((avatar) => (
-          <button key={avatar.id} className={`card w-52 shadow-xl ${selectedAvatar?.id === avatar.id ? 'bg-accent text-accent-content' : 'bg-neutral text-neutral-content'}`} onClick={() => setSelectedAvatar(avatar)}>
-            <figure className='p-5 min-h-52'>
+          <button key={avatar.id} className={`card col-span-6 md:col-span-4 lg:col-span-3 shadow-xl ${selectedAvatar?.id === avatar.id ? 'bg-accent text-accent-content' : 'bg-neutral text-neutral-content'}`} onClick={() => setSelectedAvatar(avatar)}>
+            <figure className='p-5'>
               <img
                 src={`${avatar.imageUrl}?id=${avatar.id}`}
                 alt={avatar.name}
@@ -53,7 +58,6 @@ const AvatarUpdate = ({ showNote = true }: AvatarUpdateProps) => {
             <div className="card-body">
               <h2 className="card-title">
                 {avatar.name}
-                <div className="badge badge-secondary">NEW</div>
               </h2>
             </div>
           </button>
@@ -64,4 +68,4 @@ const AvatarUpdate = ({ showNote = true }: AvatarUpdateProps) => {
   )
 }
 
-export default AvatarUpdate
+export default AvatarUpdatePage

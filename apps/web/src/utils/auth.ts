@@ -17,7 +17,8 @@ export const setSessionStorage = (key: string, value: any) => {
 };
 
 export const generateGradientFromToken = () => {
-  const token = getSessionStorage(AUTH_TOKEN_KEY);
+  try{
+    const token = getSessionStorage(AUTH_TOKEN_KEY);
   const hash = [...token].reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
   const color1 = `#${((hash * 12345) % 0xffffff).toString(16).padStart(6, '0')}`;
@@ -26,4 +27,7 @@ export const generateGradientFromToken = () => {
   const direction = (hash % 360) + 'deg';
 
   return `linear-gradient(${direction}, ${color1}, ${color2})`;
+  } catch (e) {
+    return "#000000";
+  }
 }

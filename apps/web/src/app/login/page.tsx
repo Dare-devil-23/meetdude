@@ -51,13 +51,13 @@ const LoginPage = () => {
               <label className="label">
                 <span className="label-text">Username or Email<span className="text-red-500">*</span></span>
               </label>
-              <input type="text" placeholder="username or email" className="input input-bordered" required name="usernameOrEmail" />
+              <input type="text" placeholder="username or email" className="input input-bordered" required name="usernameOrEmail" autoComplete={"username" || "email"} />
             </div>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Password<span className="text-red-500">*</span></span>
               </label>
-              <input type="password" placeholder="password" className="input input-bordered" required name="password" />
+              <input type="password" placeholder="password" className="input input-bordered" required name="password" autoComplete="current-password" />
             </div>
             {error && (
               <label className="label">

@@ -1,12 +1,19 @@
-import { AUTH_TOKEN_KEY } from '@/constants';
+'use client'
+
+import { AUTH_TOKEN_KEY, ROLE } from '@/constants';
+import { RootState } from '@/store/store';
 import { generateGradientFromToken, setSessionStorage } from '@/utils/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react'
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const NavBar = () => {
     const router = useRouter();
+
+    const loggedinUser = useSelector((state: RootState) => state.user);
+
     const handleLogout = () => {
         setSessionStorage(AUTH_TOKEN_KEY, "");
         toast.success("Logged out successfully");
@@ -47,7 +54,15 @@ const NavBar = () => {
                                 <span className="badge badge-primary">New</span>
                             </Link>
                         </li>
-                        <li><a>Settings</a></li>
+                        {
+                            loggedinUser?.role === ROLE.ADMIN && (
+                                <li>
+                                    <Link href="/admin">
+                                        Admin Dashboard
+                                    </Link>
+                                </li>
+                            )
+                        }
                         <li><button onClick={handleLogout}>Logout</button></li>
                     </ul>
                 </div>
