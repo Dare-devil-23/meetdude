@@ -17,3 +17,12 @@ export type Map = {
     thumbnail: string;
     dimensions: string;
 }
+
+export type User = {
+    id: string;
+    username: string;
+    email: string;
+    role: string;
+    avatar: Avatar;
+}
+

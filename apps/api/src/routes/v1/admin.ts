@@ -113,12 +113,20 @@ adminRouter.post("/map", async (req, res) => {
 
 adminRouter.get("/users", async (req, res) => {
     const users = await client.user.findMany({
+        where: {
+            id: {
+                not: req.userId
+            }
+        },
         select: {
             id: true,
             username: true,
             role: true,
             email: true,
             avatar: true
+        },
+        orderBy: {
+            username: "asc"
         }
     })
     res.json(users)
@@ -134,7 +142,7 @@ adminRouter.put("/user/:userId/role", async (req, res) => {
         return;
     }
 
-    if(req.userId === req.params.userId){
+    if (req.userId === req.params.userId) {
         res.status(403).json({
             message: "You are not allowed to update your own role",
         });

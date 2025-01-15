@@ -33,3 +33,13 @@ export const signupApi = (params: { username: string, password: string, email: s
         });
     });
 };
+
+export const updateUserRoleApi = (params: { userId: string, role: string }): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        axiosInstance.put(`/api/v1/admin/user/${params.userId}/role`, { type: params.role }).then((response) => {
+            resolve(response.data);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+};

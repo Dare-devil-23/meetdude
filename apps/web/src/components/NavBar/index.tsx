@@ -64,7 +64,7 @@ const NavBar = () => {
                         {
                             loggedinUser?.role === ROLE.ADMIN && (
                                 <li onClick={handleClick}>
-                                    <Link href="/admin">
+                                    <Link href="/admin/users">
                                         Admin Dashboard
                                     </Link>
                                 </li>

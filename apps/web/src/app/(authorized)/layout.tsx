@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getUserApi } from "@/services/auth";
 import { toast } from "react-toastify";
 import NavBar from "@/components/NavBar";
@@ -12,12 +12,10 @@ import SpacesLoading from "./loading";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
-    const pathname = usePathname();
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsLoading(true);
         getUserApi().then((response) => {
             if (response?.user) {
                 dispatch(setUser(response.user));
@@ -32,7 +30,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }).finally(() => {
             setIsLoading(false);
         });
-    }, [pathname]);
+    }, []);
 
     return (
         <section className="flex flex-col min-h-screen">
