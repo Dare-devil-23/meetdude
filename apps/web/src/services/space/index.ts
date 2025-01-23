@@ -1,5 +1,4 @@
 import axiosInstance from "@/services/axios";
-import { Space } from "@/types";
 
 export const getSpacesForUserApi = (): Promise<any> => {
     return new Promise((resolve, reject) => {

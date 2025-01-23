@@ -30,3 +30,24 @@ export const getUsersApi = (): Promise<User[]> => {
         });
     });
 };
+
+export const getAvailableElements = (): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        axiosInstance.get("/api/v1/elements").then((response) => {
+            resolve(response.data);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+};
+
+export const updateElementImage = (params: { elementId: string, imageUrl: string }): Promise<any> => {
+    const { elementId, imageUrl } = params;
+    return new Promise((resolve, reject) => {
+        axiosInstance.put(`/api/v1/admin/element/${elementId}`, { imageUrl }).then((response) => {
+            resolve(response.data);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}

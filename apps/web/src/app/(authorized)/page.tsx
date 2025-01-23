@@ -52,7 +52,6 @@ const HomePage = () => {
         }
       </div>
       <div className="grid grid-cols-12 gap-5 w-full md:max-w-5xl mx-auto px-5 md:px-10">
-
         {
           spaces.length > 0 ? spaces.map((space) => (
             <div key={space.id} className="card col-span-12 md:col-span-6 lg:col-span-4 bg-neutral text-neutral-content shadow-xl">
@@ -64,7 +63,7 @@ const HomePage = () => {
               </figure>
               <div className="card-body">
                 <h2 className="card-title">{space.name}</h2>
-                <p className="text-sm text-gray-500">{space.dimensions} Pixels</p>
+                <p className="text-sm text-gray-500">{space.dimensions} Units</p>
                 <div className="card-actions justify-end">
                   <button className="btn btn-ghost underline" onClick={() => openDeleteSpaceModal(space.id)}>Delete</button>
                   <Link href={`/space/${space.id}`} className="btn btn-primary">Join Space</Link>

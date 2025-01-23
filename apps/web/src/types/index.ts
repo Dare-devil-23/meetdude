@@ -26,3 +26,10 @@ export type User = {
     avatar: Avatar;
 }
 
+export type Element = {
+    id: string,
+    imageUrl: string,
+    width: number,
+    height: number,
+    static: boolean
+}

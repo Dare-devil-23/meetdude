@@ -195,7 +195,11 @@ spaceRouter.get("/all", userMiddleware, async (req, res) => {
 })
 
 spaceRouter.get("/maps", userMiddleware, async (_, res) => {
-    const maps = await client.map.findMany()
+    const maps = await client.map.findMany({
+        orderBy: {
+            id: "desc"
+        }
+    })
     res.json({
         maps: maps.map((m) => ({
             id: m.id,

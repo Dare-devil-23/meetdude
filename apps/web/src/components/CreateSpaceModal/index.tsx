@@ -1,25 +1,35 @@
+import SpacesLoading from '@/app/(authorized)/loading';
 import { createSpaceApi, getMapsApi } from '@/services/space';
 import { Map } from '@/types';
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify';
 
-interface CreateSpaceModalProps {       
+interface CreateSpaceModalProps {
     toggleRender: boolean;
     setToggleRender: (value: boolean) => void;
 }
 
-const CreateSpaceModal = ({ toggleRender, setToggleRender }: CreateSpaceModalProps) => {
+const CreateSpaceModal: React.FC<CreateSpaceModalProps> = ({ toggleRender, setToggleRender }: CreateSpaceModalProps) => {
     const [maps, setMaps] = useState<Map[]>([]);
     const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
     const [createWithoutMap, setCreateWithoutMap] = useState<boolean>(false);
     const formRef = useRef<HTMLFormElement>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isMapsLoading, setIsMapsLoading] = useState(false);
 
     useEffect(() => {
-        getMapsApi().then((response) => {
-            setMaps(response.maps);
-        });
-    }, []);
+        if (isOpen) {
+            setIsMapsLoading(true);
+            getMapsApi().then((response) => {
+                setMaps(response.maps);
+            }).catch((error) => {
+                console.log(error);
+            }).finally(() => {
+                setIsMapsLoading(false);
+            });
+        }
+    }, [isOpen]);
 
     const handleCreateSpace = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -49,7 +59,7 @@ const CreateSpaceModal = ({ toggleRender, setToggleRender }: CreateSpaceModalPro
             }
         }
 
-        if(formData){
+        if (formData) {
             setIsLoading(true);
             createSpaceApi(formData).then(() => {
                 toast.success("Space created successfully")
@@ -59,13 +69,12 @@ const CreateSpaceModal = ({ toggleRender, setToggleRender }: CreateSpaceModalPro
                 }
                 setToggleRender(!toggleRender);
                 setSelectedMapId(null);
-            }).catch((e)=> {
+            }).catch((e) => {
                 toast.error(e.response.message || "Something went wrong")
             }).finally(() => {
                 setIsLoading(false);
             })
         }
-        
     }
 
     const handleCreateWithoutMap = () => {
@@ -75,7 +84,7 @@ const CreateSpaceModal = ({ toggleRender, setToggleRender }: CreateSpaceModalPro
 
     return (
         <>
-            <input type="checkbox" id="create-space-modal" className="modal-toggle" />
+            <input type="checkbox" id="create-space-modal" className="modal-toggle" onChange={(e) => setIsOpen(e.target.checked)} />
             <div role="dialog" className="modal modal-bottom md:modal-middle">
                 <div className={`modal-box ${!createWithoutMap ? 'md:max-w-5xl' : ''}`}>
                     <h3 className="font-bold text-lg">Create a new space</h3>
@@ -110,19 +119,25 @@ const CreateSpaceModal = ({ toggleRender, setToggleRender }: CreateSpaceModalPro
                                 </>
                             ) : (
                                 <div className="grid grid-cols-12 gap-5 mx-auto px-5 max-h-[500px] overflow-y-auto">
-                                    {maps.map((map) => (
-                                        <button type="button" key={map.id} className="col-span-12 md:col-span-4 lg:col-span-3" onClick={() => setSelectedMapId(map.id)}>
-                                            <div className={`card shadow-xl ${selectedMapId === map.id ? 'bg-primary text-primary-content' : 'bg-neutral text-neutral-content'}`}>
-                                                <figure className='aspect-square'>
-                                                    <img src={map.thumbnail || '/images/thumbnail-fallback.png'} alt={map.name} className="object-cover h-full" />
-                                                </figure>
-                                                <div className="card-body">
-                                                    <h2 className="card-title">{map.name}</h2>
-                                                    <p className="text-sm text-left">{map.dimensions}</p>
+                                    {
+                                        isMapsLoading ? (
+                                            <>
+                                                <SpacesLoading items={6} />
+                                            </>
+                                        ) : maps.map((map) => (
+                                            <button type="button" key={map.id} className="col-span-12 md:col-span-4 lg:col-span-3" onClick={() => setSelectedMapId(map.id)}>
+                                                <div className={`card shadow-xl ${selectedMapId === map.id ? 'bg-primary text-primary-content' : 'bg-neutral text-neutral-content'}`}>
+                                                    <figure className='aspect-square'>
+                                                        <img src={map.thumbnail || '/images/thumbnail-fallback.png'} alt={map.name} className="object-cover h-full" />
+                                                    </figure>
+                                                    <div className="card-body">
+                                                        <h2 className="card-title">{map.name}</h2>
+                                                        <p className="text-sm text-left">{map.dimensions}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </button>
-                                    ))}
+                                            </button>
+                                        ))
+                                    }
                                 </div>
                             )
                         }

@@ -99,7 +99,11 @@ router.post("/signin", async (req, res) => {
 })
 
 router.get("/elements", async (_, res) => {
-    const elements = await client.element.findMany()
+    const elements = await client.element.findMany({
+        orderBy: {
+            id: "desc"
+        }
+    })
     res.json({
         elements: elements.map((e) => ({
             id: e.id,
